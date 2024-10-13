@@ -206,7 +206,10 @@ def _read_from_stream(
         # we will have all the necessary data. This is most useful for audio
         if start_ptr > 0:
             start_ptr -= 1
-    result = video_frames[start_ptr:end_ptr].copy()
+
+    # claforte: why the fuck are they copying a tensor that's >100GB in size?
+    # this made my 128GB system run out of memory
+    result = video_frames[start_ptr:end_ptr]  # .copy()
     return result
 
 

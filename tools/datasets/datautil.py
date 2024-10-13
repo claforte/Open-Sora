@@ -19,11 +19,15 @@ from .utils import IMG_EXTENSIONS
 
 tqdm.pandas()
 
-try:
-    from pandarallel import pandarallel
+# claforte: pandarallel allocates excessive memory (>128GB) and freezes my system
+if False:
+    try:
+        from pandarallel import pandarallel
 
-    PANDA_USE_PARALLEL = True
-except ImportError:
+        PANDA_USE_PARALLEL = True
+    except ImportError:
+        PANDA_USE_PARALLEL = False
+else:
     PANDA_USE_PARALLEL = False
 
 
@@ -114,7 +118,9 @@ def get_image_info(path, backend="pillow"):
         raise ValueError
 
 
-def get_video_info(path, backend="torchvision"):
+# claforte: changed the default backend from torchvision to cv2.
+# Whoever wrote the other code path is an idiot (reads all frames in memory, makes 3 copies, just to finally return the size. WTF)
+def get_video_info(path, backend="cv2"):
     if backend == "torchvision":
         try:
             vframes, infos = read_video(path)
